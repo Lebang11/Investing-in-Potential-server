@@ -2,12 +2,15 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+// we need to import the user schema
+const User = require('./database/Schema/User')
+
 
 // importing database
 require('./database');
 
 // base of express app, handles get request
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.send('Hello World!');
 });
 
