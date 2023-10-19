@@ -21,7 +21,7 @@ require('./database');
 // base of express app, handles get request 
 // this get request finds every user in the database, and responds to the client with a json
 app.get('/', async (req, res) => {
-  const users = await User.find({}).sort({'name': -1});
+  const users = await User.find({}).sort({'name': 1});
   console.log(users);
   res.json(users);
 });
