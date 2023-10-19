@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+app.use((_req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+});
+
 // we need to import the user schema
 const User = require('./database/Schema/User')
 
@@ -15,7 +21,7 @@ require('./database');
 // base of express app, handles get request 
 // this get request finds every user in the database, and responds to the client with a json
 app.get('/', async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).sort({'name': -1});
   console.log(users);
   res.json(users);
 });
@@ -37,11 +43,22 @@ app.post('/', async (req, res) => {
 });
 
 
+app.post('/points', async (req, res) => {
+  const points = req.body.points;
+  await User.updateOne(
+    { _id: req.body.id}, 
+    {$set: {"points": points}}, 
+    {upsert: true}
+  )
+  res.json({"message": "points changed"})
+});
+
+
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
 
 app.listen(port, () => {
-  console.log(`listening at http://localhost:${port}`);
+  console.log(`listening at https://investing-in-potential.onrender.com`);
 });
 
 // Refer back to frontend :)
