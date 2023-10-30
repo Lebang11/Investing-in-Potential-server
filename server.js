@@ -36,16 +36,20 @@ app.post('/', async (req, res) => {
   const surname = req.body.surname;
   const phonenumber = req.body.phonenumber;
   const points = req.body.points;
+  const editor = req.body.editor;
 
   //creating new user 
   const newUser = await User.create({ name, surname, phonenumber, points});
-  console.log(newUser);
+  console.log(`New User created by ${editor}`);
   
+  res.status(200)
   res.json(newUser);
 });
 
 
 app.post('/points', async (req, res) => {
+  const editor = req.body.editor;
+
   const points = req.body.points;
   await User.updateOne(
     { _id: req.body.id}, 
@@ -53,6 +57,8 @@ app.post('/points', async (req, res) => {
     {upsert: true}
   )
 
+  console.log(`Points changed by ${editor}`)
+  res.status(200)
   res.json({"message": "points changed"})
 });
 
@@ -63,11 +69,11 @@ app.post('/admin', async (req, res) => {
 
   newAdmin = await Admin.create({username, email, password});
   res.status(201)
+  console.log(`Admin sign up, ${username}`)
   return res.json(newAdmin);
 })
 
 app.post('/admin/login', async (req, res) => {
-  const username = req.body.username;
   const email = req.body.email;
   
   const adminDB = await Admin.findOne({email:email});
