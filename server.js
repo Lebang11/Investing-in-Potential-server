@@ -1,4 +1,6 @@
 const express = require('express');
+const {hashPassword} = require('./utils/helpers');
+const Admin = require('./database/Schema/Admin')
 const app = express();
 const port = 3000;
 
@@ -50,10 +52,18 @@ app.post('/points', async (req, res) => {
     {$set: {"points": points}}, 
     {upsert: true}
   )
+
   res.json({"message": "points changed"})
 });
 
+app.post('/admin', async (req, res) => {
+  const username = req.body.username
+  const email = req.body.email
+  const password = await hashPassword(req.body.password)
 
+  newAdmin = await Admin.create({username, email, password});
+  res.json(newAdmin);
+})
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
 
