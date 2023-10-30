@@ -73,6 +73,7 @@ app.post('/admin/login', async (req, res) => {
   const adminDB = await Admin.findOne({email:email});
 
   if (!adminDB) {
+    res.status(406)
     res.json({"message":'User does not exist'})
   } else {
     const isValid = await comparePassword(req.body.password, adminDB.password)
