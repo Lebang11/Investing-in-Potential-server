@@ -1,5 +1,5 @@
 const express = require('express');
-const {hashPassword} = require('./utils/helpers');
+const {hashPassword, comparePassword} = require('./utils/helpers');
 const Admin = require('./database/Schema/Admin')
 const app = express();
 const port = 3000;
@@ -62,7 +62,31 @@ app.post('/admin', async (req, res) => {
   const password = await hashPassword(req.body.password)
 
   newAdmin = await Admin.create({username, email, password});
-  res.json(newAdmin);
+  res.status(201)
+  return res.json(newAdmin);
+})
+
+app.post('/admin/login', async (req, res) => {
+  const username = req.body.username;
+  const email = req.body.email;
+  
+  const adminDB = await Admin.findOne({email:email});
+
+  if (!adminDB) {
+    res.json({"message":'User does not exist'})
+  } else {
+    const isValid = await comparePassword(req.body.password, adminDB.password)
+    
+    if (!isValid) {
+      res.status(406)
+      console.log(`${adminDB.username} password incorrect`)
+      return res.json({"message":"Password is incorrect"})
+    } else if (isValid) {
+      console.log(`${adminDB.username} logged in!`)
+      res.status(200)
+      return res.json(adminDB)
+    }
+  }
 })
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
