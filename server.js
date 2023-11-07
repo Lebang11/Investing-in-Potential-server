@@ -4,7 +4,7 @@ const Admin = require('./database/Schema/Admin')
 const app = express();
 const port = 3000;
 
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
   next();
