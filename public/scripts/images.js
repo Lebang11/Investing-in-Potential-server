@@ -4,7 +4,8 @@ const Images = require('../../database/Schema/Images')
 const router = express();
 
 router.post('/', async (req, res) => {
-    imagename = req.body.imagename
+    const imagename = req.body.imagename
+    console.log(imagename)
     const newImage = await Images.create({imagename})
     res.status(201)
     res.json({"message":`new pic: ${newImage}`})
