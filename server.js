@@ -10,6 +10,9 @@ app.use((req, res, next) => {
   next();
 });
 
+const galleryPage = require('./public/scripts/images')
+app.use('/gallery', galleryPage)
+
 // we need to import the user schema
 const User = require('./database/Schema/User')
 
