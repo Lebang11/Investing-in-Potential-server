@@ -10,8 +10,7 @@ app.use((req, res, next) => {
   next();
 });
 
-const galleryPage = require('./public/scripts/images')
-app.use('/gallery', galleryPage)
+
 
 // we need to import the user schema
 const User = require('./database/Schema/User')
@@ -98,6 +97,9 @@ app.post('/admin/login', async (req, res) => {
     }
   }
 })
+
+const galleryPage = require('./public/scripts/images')
+app.use('/gallery', galleryPage)
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
 
