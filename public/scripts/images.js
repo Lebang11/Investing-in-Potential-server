@@ -13,3 +13,5 @@ router.get('/', async (req, res) => {
     const images = await Images.find({})
     res.json(images)
 })
+
+module.exports = router;
