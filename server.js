@@ -1,6 +1,7 @@
 const express = require('express');
 const {hashPassword, comparePassword} = require('./utils/helpers');
 const nodemailer = require('nodemailer');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 
@@ -10,6 +11,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(cors());
 
 
 // we need to import the user schema
