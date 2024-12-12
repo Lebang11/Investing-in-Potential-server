@@ -293,7 +293,7 @@ border-color: #cdc59a !important;
 // install nodemon and use 'nodemon .' in terminal to listen
 
 app.listen(port, () => {
-  console.log(`listening at https://investing-in-potential.onrender.com`);
+  console.log(`listening at https://investing-in-potential-server.vercel.app`);
 });
 
 // Refer back to frontend :)
