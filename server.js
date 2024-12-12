@@ -14,7 +14,6 @@ app.use((req, res, next) => {
 const corsOptions = {
   origin: 'https://www.investinginpotential.co.za', // Replace with your frontend's URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
-  credentials: true, // Include credentials if needed
 };
 
 app.use(cors(corsOptions));
