@@ -11,13 +11,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const corsOptions = {
-  origin: 'https://www.investinginpotential.co.za', // Replace with your frontend's URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed HTTP methods
-};
-
-app.use(cors(corsOptions));
-
 // we need to import the user schema
 const User = require('./database/Schema/User')
 
