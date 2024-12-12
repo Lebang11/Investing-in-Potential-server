@@ -1,6 +1,5 @@
 const express = require('express');
 const {hashPassword, comparePassword} = require('./utils/helpers');
-const Admin = require('./database/Schema/Admin');
 const nodemailer = require('nodemailer');
 const app = express();
 const port = 3000;
@@ -65,15 +64,15 @@ app.post('/points', async (req, res) => {
   res.json({"message": "points changed"})
 });
 
-app.post('/admin', async (req, res) => {
+app.post('/user', async (req, res) => {
   const username = req.body.username
   const email = req.body.email
   const password = await hashPassword(req.body.password)
 
-  newAdmin = await Admin.create({username, email, password});
+  newUser = await User.create({username, email, password});
   res.status(201)
-  console.log(`Admin sign up, ${username}`)
-  return res.json(newAdmin);
+  console.log(`User sign up, ${username}`)
+  return res.json(newUser);
 })
 
 app.post('/admin/login', async (req, res) => {
@@ -290,8 +289,6 @@ border-color: #cdc59a !important;
 
 })
 
-const galleryPage = require('./public/scripts/images')
-app.use('/gallery', galleryPage)
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
 
