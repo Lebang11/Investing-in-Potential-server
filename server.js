@@ -128,7 +128,7 @@ app.post('/user', async (req, res) => {
 
   newUser = await User.create({name, email, password});
   res.status(201)
-  console.log(`User sign up, ${username}`)
+  console.log(`User sign up, ${name}`)
   return res.json(newUser);
 })
 
