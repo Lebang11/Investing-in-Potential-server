@@ -5,11 +5,13 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Headers', '*');
+//   next();
+// });
+
+app.use(cors());
 
 // we need to import the user schema
 const User = require('./database/Schema/User');
