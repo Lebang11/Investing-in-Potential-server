@@ -3,7 +3,7 @@ const {hashPassword, comparePassword} = require('./utils/helpers');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = 3001;
 
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Origin', '*');
@@ -136,6 +136,7 @@ app.post('/login', async (req, res) => {
   const email = req.body.email;
   
   const adminDB = await User.findOne({email:email});
+  console.log(adminDB)
 
   if (!adminDB) {
     res.status(406)
@@ -145,10 +146,10 @@ app.post('/login', async (req, res) => {
     
     if (!isValid) {
       res.status(406)
-      console.log(`${adminDB.username} password incorrect`)
+      console.log(`${adminDB.name} password incorrect`)
       return res.json({"message":"Password is incorrect"})
     } else if (isValid) {
-      console.log(`${adminDB.username} logged in!`)
+      console.log(`${adminDB.name} logged in!`)
       res.status(200)
       return res.json(adminDB)
     }
