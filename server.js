@@ -132,10 +132,10 @@ app.post('/user', async (req, res) => {
   return res.json(newUser);
 })
 
-app.post('/admin/login', async (req, res) => {
+app.post('/login', async (req, res) => {
   const email = req.body.email;
   
-  const adminDB = await Admin.findOne({email:email});
+  const adminDB = await User.findOne({email:email});
 
   if (!adminDB) {
     res.status(406)
