@@ -16,6 +16,8 @@ app.use(cors());
 // we need to import the user schema
 const User = require('./database/Schema/User');
 const Job = require('./database/Schema/Job');
+const Application = require('./database/Schema/Applications');
+
 
 
 // importing and using body-parser to be able to use json
@@ -64,6 +66,25 @@ app.post('/jobs', async (req, res) => {
   } catch (error) {
       console.error('Error posting job:', error);
       res.status(500).json({ message: 'Error posting job.' });
+  }
+});
+
+app.post('/applications', async (req, res) => {
+  try {
+      const { email, name, points, job } = req.body;
+
+      const newApplication = new Application({
+        email,
+        name,
+        points,
+        job,
+      });
+
+      const savedApplication = await newApplication.save();
+      res.status(201).json(savedApplication);
+  } catch (error) {
+      console.error('Error posting application:', error);
+      res.status(500).json({ message: 'Error posting application.' });
   }
 });
 // post request where client posts info to backend
