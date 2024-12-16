@@ -12,7 +12,9 @@ app.use((req, res, next) => {
 });
 
 // we need to import the user schema
-const User = require('./database/Schema/User')
+const User = require('./database/Schema/User');
+const Job = require('./database/Schema/Job');
+
 
 // importing and using body-parser to be able to use json
 const bodyParser = require('body-parser');
@@ -29,6 +31,39 @@ app.get('/', async (req, res) => {
   res.json(users);
 });
 
+app.get('/jobs', async (req, res) => {
+  try {
+      const jobs = await Job.find();
+      res.status(200).json(jobs);
+  } catch (error) {
+      console.error('Error fetching jobs:', error);
+      res.status(500).json({ message: 'Error fetching jobs.' });
+  }
+});
+
+app.post('/jobs', async (req, res) => {
+  try {
+      const { title, description, category, price, duration, cut, teamSize, image, points } = req.body;
+
+      const newJob = new Job({
+          title,
+          description,
+          category,
+          price,
+          duration,
+          cut,
+          teamSize,
+          image,
+          points,
+      });
+
+      const savedJob = await newJob.save();
+      res.status(201).json(savedJob);
+  } catch (error) {
+      console.error('Error posting job:', error);
+      res.status(500).json({ message: 'Error posting job.' });
+  }
+});
 // post request where client posts info to backend
 app.post('/', async (req, res) => {
   // req is request from client, res is response from server
