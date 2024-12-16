@@ -122,11 +122,11 @@ app.post('/points', async (req, res) => {
 });
 
 app.post('/user', async (req, res) => {
-  const username = req.body.username
+  const name = req.body.username
   const email = req.body.email
   const password = await hashPassword(req.body.password)
 
-  newUser = await User.create({username, email, password});
+  newUser = await User.create({name, email, password});
   res.status(201)
   console.log(`User sign up, ${username}`)
   return res.json(newUser);

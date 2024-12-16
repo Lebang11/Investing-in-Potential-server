@@ -4,14 +4,14 @@ const mongoose = require('mongoose');
 
 // this is what our collection will have and the types
 UserSchema = new mongoose.Schema({
-    email: mongoose.SchemaTypes.String,
-    password: mongoose.SchemaTypes.String,
-    name: mongoose.SchemaTypes.String,
-    surname: mongoose.SchemaTypes.String,
+    email: {type: String, required: true},
+    password: {type: String, required: true},
+    name: {type: String, required: true},
     phonenumber: mongoose.SchemaTypes.String,
-    points: mongoose.SchemaTypes.String,
-    admin: mongoose.SchemaTypes.String,
-    
+    points: {type: Number, default: 0},
+    admin: {type: Boolean, default: false},
+    linkedIn: { type: String, default: "" },
+    github: {type: String, default: ""}
 });
 
 module.exports = mongoose.model('users', UserSchema);
