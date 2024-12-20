@@ -17,6 +17,7 @@ UserSchema = new mongoose.Schema({
     address: {type: String, default: ""},
     city: {type: String, default: ""},
     school: {type: String, default: ""},
+    age: {type: Number, default: 0},
 });
 
 module.exports = mongoose.model('users', UserSchema);
