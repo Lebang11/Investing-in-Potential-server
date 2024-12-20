@@ -11,7 +11,12 @@ UserSchema = new mongoose.Schema({
     points: {type: Number, default: 0},
     admin: {type: Boolean, default: false},
     linkedIn: { type: String, default: "" },
-    github: {type: String, default: ""}
+    github: {type: String, default: ""},
+    student: {type: Boolean, default: false},
+    bio: {type: String, default: ""},
+    address: {type: String, default: ""},
+    city: {type: String, default: ""},
+    school: {type: String, default: ""},
 });
 
 module.exports = mongoose.model('users', UserSchema);
