@@ -345,7 +345,7 @@ border-color: #cdc59a !important;
     }
   })
 
-  res.json({'message': `${mailDetails}`})
+  res.json(mailDetails)
 
 })
 
