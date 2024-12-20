@@ -4,6 +4,8 @@ const nodemailer = require('nodemailer');
 const cors = require('cors');
 const app = express();
 const port = 3001;
+require('dotenv').config();
+
 
 // app.use((req, res, next) => {
 //   res.header('Access-Control-Allow-Origin', '*');
@@ -165,7 +167,7 @@ app.post('/email', (req, res) => {
     service: 'gmail',
     auth: {
       user: 'investinginpotential@gmail.com',
-      pass: ""
+      pass: process.env.GOOGLE_APP_PASSWORD
     }
   });
 
