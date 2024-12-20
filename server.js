@@ -347,6 +347,24 @@ border-color: #cdc59a !important;
 
 })
 
+app.get('/applications', async (req, res) => {
+  try {
+      const { email, job } = req.query;
+      
+      // Find applications matching both email and job title
+      const applications = await Application.find({
+          email: email,
+          job: job
+      });
+
+      res.json(applications);
+  } catch (error) {
+      console.error('Error checking application:', error);
+      res.status(500).json({ message: 'Error checking application status' });
+  }
+});
+
+
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
 
