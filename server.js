@@ -125,7 +125,7 @@ app.post('/points', async (req, res) => {
 
 app.post('/user', async (req, res) => {
   const name = req.body.username
-  const email = req.body.email
+  const email = req.body.email.toLowerCase();
   const password = await hashPassword(req.body.password)
 
   newUser = await User.create({name, email, password});
@@ -135,7 +135,8 @@ app.post('/user', async (req, res) => {
 })
 
 app.post('/login', async (req, res) => {
-  const email = req.body.email;
+  const email = req.body.email.toLowerCase();
+  
   
   const adminDB = await User.findOne({email:email});
   console.log(adminDB)
