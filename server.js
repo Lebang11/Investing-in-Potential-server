@@ -193,7 +193,7 @@ app.post('/email', async (req, res) => {
 
       let mailDetails = {
         from: "investinginpotential@gmail.com",
-        to:"investinginpotential@gmail.com",
+        to:"support@investinginpotential.co.za",
         subject: "Query from website",
         html: `<!doctype html>
     <html>
