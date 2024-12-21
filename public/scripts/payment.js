@@ -44,9 +44,9 @@ router.post('/initialize', async (req, res) => {
 
         // Generate signature
         const signatureString = Object.entries(paymentData)
-            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-            .map(([key, value]) => `${key}=${encodeURIComponent(value.trim())}`)
-            .join('&');
+    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+    .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+    .join('&');
         
         paymentData.signature = md5(signatureString);
 
