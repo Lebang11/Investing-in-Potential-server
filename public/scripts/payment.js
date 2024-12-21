@@ -15,7 +15,7 @@ const PAYFAST_CONFIG = {
     merchant_key: process.env.PAYFAST_MERCHANT_KEY,
     return_url: `${process.env.FRONTEND_URL}/test-rules`,
     cancel_url: `${process.env.FRONTEND_URL}/course-signup`,
-    notify_url: `${process.env.BACKEND_URL}/api/payment/notify`,
+    notify_url: `${process.env.BACKEND_URL}/payment/notify`,
 };
 
 // Initialize payment
