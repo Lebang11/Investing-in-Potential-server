@@ -22,6 +22,13 @@ const Application = require('./database/Schema/Applications');
 
 
 
+//payment route
+const PaymentRoute = require('./public/scripts/payment');
+
+app.use('/payment', PaymentRoute);
+
+
+
 // importing and using body-parser to be able to use json
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());

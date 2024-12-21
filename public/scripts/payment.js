@@ -3,6 +3,11 @@ const router = express.Router();
 const md5 = require('md5');
 require('dotenv').config();
 
+const Payment = require('../../database/Schema/Payment');
+
+const bodyParser = require('body-parser');
+router.use(bodyParser.json());
+
 
 // PayFast configuration
 const PAYFAST_CONFIG = {
@@ -16,6 +21,7 @@ const PAYFAST_CONFIG = {
 // Initialize payment
 router.post('/initialize', async (req, res) => {
     try {
+        console.log(req.body)
         const { email, name, amount, planType } = req.body;
 
         // Create payment record in database
