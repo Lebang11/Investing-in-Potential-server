@@ -11,6 +11,7 @@ const isAdmin = (req, res, next) => {
     // }
     next();
 };
+router.use(express.json());
 
 // Get all payments
 router.get('/payments', isAdmin, async (req, res) => {
