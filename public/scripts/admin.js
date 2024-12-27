@@ -49,17 +49,17 @@ router.patch('/payments/:id', isAdmin, async (req, res) => {
             });
 
             // Create assessment session if it doesn't exist
-            const existingAssessment = await Assessment.findOne({ userId: payment.userId });
-            if (!existingAssessment) {
-                await Assessment.create({
-                    userId: payment.userId,
-                    status: 'pending',
-                    timeLimit: {
-                        aptitude: 2400, // 40 minutes
-                        eq: 900 // 15 minutes
-                    }
-                });
-            }
+            // const existingAssessment = await Assessment.findOne({ userId: payment.userId });
+            // if (!existingAssessment) {
+            //     await Assessment.create({
+            //         userId: payment.userId,
+            //         status: 'pending',
+            //         timeLimit: {
+            //             aptitude: 2400, // 40 minutes
+            //             eq: 900 // 15 minutes
+            //         }
+            //     });
+            // }
         }
 
         await payment.save();
