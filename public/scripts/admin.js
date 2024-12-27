@@ -43,11 +43,14 @@ router.patch('/payments/:id', isAdmin, async (req, res) => {
             payment.completedAt = new Date();
             
             // Update user payment status
-            await User.findByIdAndUpdate(payment.userId, {
-                hasPaid: true,
-                paidAt: new Date()
-            });
-
+            await User.findOneAndUpdate(
+                { email: payment.email }, // Find user by email
+                {
+                    hasPaid: true,
+                    paidAt: new Date()
+                },
+                { new: true } // Option to return the updated document
+            );
             // Create assessment session if it doesn't exist
             // const existingAssessment = await Assessment.findOne({ userId: payment.userId });
             // if (!existingAssessment) {
