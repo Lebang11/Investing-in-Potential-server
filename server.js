@@ -24,6 +24,9 @@ const Application = require('./database/Schema/Applications');
 
 //payment route
 const PaymentRoute = require('./public/scripts/payment');
+const adminRoutes = require('./public/scripts/admin');
+
+app.use('/admin', adminRoutes);
 
 app.use('/payment', PaymentRoute);
 
