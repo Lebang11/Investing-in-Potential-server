@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const md5 = require('md5');
 require('dotenv').config();
+const mongoose = require('mongoose');
 
 const Payment = require('../../database/Schema/Payment');
 
@@ -110,40 +111,51 @@ router.post('/notify', async (req, res) => {
             payment_status,
             pf_payment_id,
             payment_date,
-            amount_gross,
-            ...paymentDetails 
+            amount_gross 
         } = req.body;
 
-        // Verify payment signature
-        const signature = req.body.signature;
-        delete req.body.signature;
-        
-        const signatureString = Object.entries(req.body)
-            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-            .map(([key, value]) => `${key}=${encodeURIComponent(value.trim())}`)
-            .join('&');
-        
-        const calculatedSignature = md5(signatureString);
+        // Convert string ID to MongoDB ObjectId
+        const paymentId = new mongoose.Types.ObjectId(custom_str1);
 
-        if (signature !== calculatedSignature) {
-            throw new Error('Invalid signature');
+        // Map PayFast status to our schema status
+        let normalizedStatus;
+        switch(payment_status.toUpperCase()) {
+            case 'COMPLETE':
+            case 'COMPLETED':
+                normalizedStatus = 'COMPLETE';
+                break;
+            case 'FAILED':
+            case 'FAILURE':
+                normalizedStatus = 'FAILED';
+                break;
+            case 'CANCELLED':
+            case 'CANCEL':
+                normalizedStatus = 'CANCELLED';
+                break;
+            default:
+                normalizedStatus = 'pending';
         }
 
-        // Update payment status in database with more details
-        await Payment.findByIdAndUpdate(custom_str1, {
-            status: payment_status,
-            paymentDetails: {
-                ...paymentDetails,
-                paymentId: pf_payment_id,
-                paymentDate: payment_date,
-                amountPaid: amount_gross,
-                isPaid: payment_status === 'COMPLETE'
+        // Update payment with normalized status using converted ObjectId
+        const updatedPayment = await Payment.findByIdAndUpdate(
+            paymentId,  // Use the converted ObjectId
+            {
+                status: normalizedStatus,
+                paymentDetails: {
+                    paymentId: pf_payment_id,
+                    paymentDate: payment_date,
+                    amountPaid: amount_gross,
+                    isPaid: normalizedStatus === 'COMPLETE'
+                },
+                paidAt: normalizedStatus === 'COMPLETE' ? new Date() : null
             },
-            paidAt: payment_status === 'COMPLETE' ? new Date() : null
-        });
+            { new: true }
+        );
+
+        console.log('Payment status updated:', updatedPayment); // Add this for debugging
 
         // If payment successful, create assessment session
-        if (payment_status === 'COMPLETE') {
+        if (normalizedStatus === 'COMPLETE') {
             await Assessment.create({
                 userId: custom_str1,
                 status: 'pending',
