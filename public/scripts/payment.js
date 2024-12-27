@@ -105,7 +105,14 @@ router.post('/initialize', async (req, res) => {
 // Payment notification webhook
 router.post('/notify', async (req, res) => {
     try {
-        const { custom_str1, payment_status, ...paymentDetails } = req.body;
+        const { 
+            custom_str1, 
+            payment_status,
+            pf_payment_id,
+            payment_date,
+            amount_gross,
+            ...paymentDetails 
+        } = req.body;
 
         // Verify payment signature
         const signature = req.body.signature;
@@ -122,10 +129,17 @@ router.post('/notify', async (req, res) => {
             throw new Error('Invalid signature');
         }
 
-        // Update payment status in database
+        // Update payment status in database with more details
         await Payment.findByIdAndUpdate(custom_str1, {
             status: payment_status,
-            paymentDetails
+            paymentDetails: {
+                ...paymentDetails,
+                paymentId: pf_payment_id,
+                paymentDate: payment_date,
+                amountPaid: amount_gross,
+                isPaid: payment_status === 'COMPLETE'
+            },
+            paidAt: payment_status === 'COMPLETE' ? new Date() : null
         });
 
         // If payment successful, create assessment session

@@ -19,12 +19,12 @@ const PaymentSchema = new mongoose.Schema({
         default: 'pending'
     },
     paymentDetails: {
-        type: Object
+        paymentId: String,
+        paymentDate: String,
+        amountPaid: Number,
+        isPaid: Boolean
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
-});
+    paidAt: Date
+}, { timestamps: true });
 
 module.exports = mongoose.model('Payment', PaymentSchema);
