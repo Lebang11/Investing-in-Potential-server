@@ -21,8 +21,11 @@ const PAYFAST_CONFIG = {
 // Initialize payment
 router.post('/initialize', async (req, res) => {
     try {
-        console.log(req.body)
         const { email, name, amount, planType } = req.body;
+
+        if (!email || !name || !amount || !planType) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
 
         // Create payment record in database
         const payment = await Payment.create({
@@ -34,19 +37,23 @@ router.post('/initialize', async (req, res) => {
 
         // Generate PayFast data
         const paymentData = {
-            ...PAYFAST_CONFIG,
+            merchant_id: PAYFAST_CONFIG.merchant_id,
+            merchant_key: PAYFAST_CONFIG.merchant_key,
+            return_url: PAYFAST_CONFIG.return_url,
+            cancel_url: PAYFAST_CONFIG.cancel_url,
+            notify_url: PAYFAST_CONFIG.notify_url,
             name_first: name,
             email_address: email,
-            amount: amount,
+            amount: amount.toFixed(2), // PayFast requires amount with 2 decimal places
             item_name: 'Assessment Fee',
-            custom_str1: payment._id // Store our payment ID for reference
+            custom_str1: payment._id.toString()
         };
 
         // Generate signature
         const signatureString = Object.entries(paymentData)
-    .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-    .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
-    .join('&');
+            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+            .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+            .join('&');
         
         paymentData.signature = md5(signatureString);
 
@@ -56,6 +63,44 @@ router.post('/initialize', async (req, res) => {
         res.status(500).json({ error: 'Failed to initialize payment' });
     }
 });
+// // Initialize payment
+// router.post('/initialize', async (req, res) => {
+//     try {
+//         console.log(req.body)
+//         const { email, name, amount, planType } = req.body;
+
+//         // Create payment record in database
+//         const payment = await Payment.create({
+//             email,
+//             amount,
+//             planType,
+//             status: 'pending'
+//         });
+
+//         // Generate PayFast data
+//         const paymentData = {
+//             ...PAYFAST_CONFIG,
+//             name_first: name,
+//             email_address: email,
+//             amount: amount,
+//             item_name: 'Assessment Fee',
+//             custom_str1: payment._id // Store our payment ID for reference
+//         };
+
+//         // Generate signature
+//         const signatureString = Object.entries(paymentData)
+//     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+//     .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+//     .join('&');
+        
+//         paymentData.signature = md5(signatureString);
+
+//         res.json(paymentData);
+//     } catch (error) {
+//         console.error('Payment initialization error:', error);
+//         res.status(500).json({ error: 'Failed to initialize payment' });
+//     }
+// });
 
 // Payment notification webhook
 router.post('/notify', async (req, res) => {
