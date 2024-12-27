@@ -5,12 +5,12 @@ const User = require('../../database/Schema/User');
 const Assessment = require('../../database/Schema/Assessment');
 
 // Middleware to check if user is admin
-// const isAdmin = (req, res, next) => {
-//     if (!req.user || !req.user.admin) {
-//         return res.status(403).json({ error: 'Unauthorized access' });
-//     }
-//     next();
-// };
+const isAdmin = (req, res, next) => {
+    // if (!req.user || !req.user.admin) {
+    //     return res.status(403).json({ error: 'Unauthorized access' });
+    // }
+    next();
+};
 
 // Get all payments
 router.get('/payments', isAdmin, async (req, res) => {
