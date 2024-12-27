@@ -18,7 +18,7 @@ router.get('/payments', isAdmin, async (req, res) => {
     try {
         const payments = await Payment.find()
             .sort({ createdAt: -1 }) // Most recent first
-            .populate('userId', 'email name'); // Get user details
+            .populate('email'); // Get user details
         res.json(payments);
     } catch (error) {
         console.error('Error fetching payments:', error);
