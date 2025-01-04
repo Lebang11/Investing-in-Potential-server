@@ -13,8 +13,12 @@ require('dotenv').config();
 //   next();
 // });
 
-app.use(cors());
-
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 // we need to import the user schema
 const User = require('./database/Schema/User');
 const Job = require('./database/Schema/Job');
