@@ -11,11 +11,19 @@ const AssessmentSchema = new mongoose.Schema({
         default: 'pending'
     },
     aptitudeAnswers: {
-        type: Object,
+        type: [{
+            questionId: Number,
+            answer: Number,
+            correct: Boolean
+        }],
         required: true
     },
     eqAnswers: {
-        type: Object,
+        type: [{
+            questionId: Number,
+            answer: Number,
+            score: Number
+        }],
         required: true
     },
     aptitudeScore: {
@@ -25,6 +33,10 @@ const AssessmentSchema = new mongoose.Schema({
     eqScore: {
         type: Number,
         default: 0
+    },
+    startTime: {
+        type: Date,
+        required: true
     },
     completedAt: {
         type: Date,
