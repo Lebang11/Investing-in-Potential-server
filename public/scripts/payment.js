@@ -13,7 +13,7 @@ router.use(express.urlencoded({ extended: true }));
 const PAYFAST_CONFIG = {
     merchant_id: process.env.PAYFAST_MERCHANT_ID,
     merchant_key: process.env.PAYFAST_MERCHANT_KEY,
-    return_url: `${process.env.FRONTEND_URL}/test-rules`,
+    return_url: `${process.env.FRONTEND_URL}/payment/status`,
     cancel_url: `${process.env.FRONTEND_URL}/course-signup`,
     notify_url: `${process.env.BACKEND_URL}/payment/notify`,
 };
@@ -249,12 +249,12 @@ router.post('/initialize-enrollment', async (req, res) => {
         };
 
         // Generate signature
-        const signatureString = Object.entries(paymentData)
-            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-            .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
-            .join('&');
+        // const signatureString = Object.entries(paymentData)
+        //     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+        //     .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+        //     .join('&');
         
-        paymentData.signature = md5(signatureString);
+        // paymentData.signature = md5(signatureString);
 
         console.log('Sending payment data:', paymentData);
         res.json(paymentData);
@@ -262,8 +262,46 @@ router.post('/initialize-enrollment', async (req, res) => {
         console.error('Enrollment payment initialization error:', error);
         res.status(500).json({ 
             error: 'Failed to initialize payment',
-            details: error.message
+            received: req.body
         });
+    }
+});
+
+// Add this new route for payment status
+router.get('/status/:reference', async (req, res) => {
+    try {
+        const { reference } = req.params;
+        const { type } = req.query;
+
+        const payment = await Payment.findOne({ reference });
+        
+        if (!payment) {
+            return res.status(404).json({ error: 'Payment not found' });
+        }
+
+        // Return different responses based on payment type
+        if (type === 'enrollment') {
+            return res.json({
+                status: payment.status,
+                planType: payment.planType,
+                amount: payment.amount,
+                email: payment.email,
+                paymentDetails: payment.paymentDetails,
+                completedAt: payment.completedAt
+            });
+        }
+
+        // Default response for application fee payments
+        res.json({
+            status: payment.status,
+            amount: payment.amount,
+            email: payment.email,
+            completedAt: payment.completedAt
+        });
+
+    } catch (error) {
+        console.error('Payment status check error:', error);
+        res.status(500).json({ error: 'Failed to check payment status' });
     }
 });
 
