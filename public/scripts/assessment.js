@@ -219,7 +219,7 @@ router.put('/status/:id', async (req, res) => {
             req.params.id,
             { status },
             { new: true }
-        ).populate('paymentPlan');
+        )
 
         if (status === 'passed') {
             // Send congratulatory email
