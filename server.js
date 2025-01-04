@@ -36,10 +36,12 @@ const Payment = require('./database/Schema/Payment');
 //payment route
 const PaymentRoute = require('./public/scripts/payment');
 const adminRoutes = require('./public/scripts/admin');
+const assessmentRoutes = require('./public/scripts/assessment');
 
 app.use('/admin', adminRoutes);
 
 app.use('/payment', PaymentRoute);
+app.use('/assessment', assessmentRoutes);
 
 
 
