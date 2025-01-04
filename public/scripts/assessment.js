@@ -23,6 +23,14 @@ router.post('/submit', async (req, res) => {
             });
         }
 
+        // Ensure startTime is a valid date
+        const parsedStartTime = new Date(startTime);
+        if (isNaN(parsedStartTime.getTime())) {
+            return res.status(400).json({
+                error: 'Invalid start time'
+            });
+        }
+
         // Calculate aptitude score
         const formattedAptitudeAnswers = Object.entries(aptitudeAnswers)
             .filter(([key]) => key.startsWith('aptitude_'))
@@ -69,7 +77,7 @@ router.post('/submit', async (req, res) => {
             eqScore,
             timeSpent,
             tabSwitches,
-            startTime: new Date(startTime)
+            startTime: parsedStartTime
         });
 
         res.status(201).json({
