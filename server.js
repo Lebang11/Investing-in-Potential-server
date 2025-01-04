@@ -426,6 +426,35 @@ app.get('/applications', async (req, res) => {
   }
 });
 
+app.get('/payment/check', async (req, res) => {
+    try {
+        const { email } = req.query;
+        
+        if (!email) {
+            return res.status(400).json({ 
+                error: 'Email is required' 
+            });
+        }
+
+        // Find the most recent payment for this email
+        const payment = await Payment.findOne({ 
+            email,
+            status: 'COMPLETE',
+            planType: 'APPLICATION_FEE'
+        }).sort({ completedAt: -1 });
+
+        res.json({ 
+            paid: !!payment,
+            paymentDate: payment?.completedAt
+        });
+
+    } catch (error) {
+        console.error('Payment check error:', error);
+        res.status(500).json({ 
+            error: 'Failed to check payment status' 
+        });
+    }
+});
 
 // listens to port 3000
 // install nodemon and use 'nodemon .' in terminal to listen
