@@ -6,14 +6,27 @@ const app = express();
 const port = 3001;
 require('dotenv').config();
 
+const ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL
+];
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Headers', '*');
-//   next();
-// });
+app.use(cors({
+    origin: function(origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-app.use(cors());
 // we need to import the user schema
 const User = require('./database/Schema/User');
 const Job = require('./database/Schema/Job');
