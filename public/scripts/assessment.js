@@ -86,4 +86,43 @@ router.get('/status/:email', async (req, res) => {
     }
 });
 
+// Get all assessments (admin only)
+router.get('/all', async (req, res) => {
+    try {
+        const assessments = await Assessment.find()
+            .sort({ completedAt: -1 });
+        
+        res.json(assessments);
+    } catch (error) {
+        console.error('Error fetching assessments:', error);
+        res.status(500).json({ error: 'Failed to fetch assessments' });
+    }
+});
+
+// Update assessment status (admin only)
+router.patch('/:id/status', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const assessment = await Assessment.findByIdAndUpdate(
+            id,
+            { 
+                status,
+                reviewedAt: new Date()
+            },
+            { new: true }
+        );
+
+        if (!assessment) {
+            return res.status(404).json({ error: 'Assessment not found' });
+        }
+
+        res.json(assessment);
+    } catch (error) {
+        console.error('Error updating assessment:', error);
+        res.status(500).json({ error: 'Failed to update assessment' });
+    }
+});
+
 module.exports = router; 
