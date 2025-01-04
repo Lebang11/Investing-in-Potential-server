@@ -10,8 +10,14 @@ require('dotenv').config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://www.investinginpotential.co.za',
+    'https://investing-in-potential.vercel.app'
+];
+
 app.use(cors({
-    origin: '*',
+    origin: ALLOWED_ORIGINS,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -25,8 +31,7 @@ app.options('*', cors());
 const User = require('./database/Schema/User');
 const Job = require('./database/Schema/Job');
 const Application = require('./database/Schema/Applications');
-
-
+const Payment = require('./database/Schema/Payment');
 
 //payment route
 const PaymentRoute = require('./public/scripts/payment');
@@ -418,36 +423,6 @@ app.get('/applications', async (req, res) => {
       console.error('Error checking application:', error);
       res.status(500).json({ message: 'Error checking application status' });
   }
-});
-
-app.get('/payment/check', async (req, res) => {
-    try {
-        const { email } = req.query;
-        
-        if (!email) {
-            return res.status(400).json({ 
-                error: 'Email is required' 
-            });
-        }
-
-        // Find the most recent payment for this email
-        const payment = await Payment.findOne({ 
-            email,
-            status: 'COMPLETE',
-            planType: 'APPLICATION_FEE'
-        }).sort({ completedAt: -1 });
-
-        res.json({ 
-            paid: !!payment,
-            paymentDate: payment?.completedAt
-        });
-
-    } catch (error) {
-        console.error('Payment check error:', error);
-        res.status(500).json({ 
-            error: 'Failed to check payment status' 
-        });
-    }
 });
 
 // listens to port 3000

@@ -128,4 +128,35 @@ router.post('/notify', async (req, res) => {
     }
 });
 
+// Payment status check route
+router.get('/check', async (req, res) => {
+    try {
+        const { email } = req.query;
+        
+        if (!email) {
+            return res.status(400).json({ 
+                error: 'Email is required' 
+            });
+        }
+
+        // Find the most recent payment for this email
+        const payment = await Payment.findOne({ 
+            email,
+            status: 'COMPLETE',
+            planType: 'APPLICATION_FEE'
+        }).sort({ completedAt: -1 });
+
+        res.json({ 
+            paid: !!payment,
+            paymentDate: payment?.completedAt
+        });
+
+    } catch (error) {
+        console.error('Payment check error:', error);
+        res.status(500).json({ 
+            error: 'Failed to check payment status' 
+        });
+    }
+});
+
 module.exports = router;
