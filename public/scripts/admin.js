@@ -106,9 +106,7 @@ router.get('/users', isAdmin, async (req, res) => {
 // Get all assessments
 router.get('/assessments', isAdmin, async (req, res) => {
     try {
-        const assessments = await Assessment.find()
-            .populate('userId', 'email name')
-            .sort({ createdAt: -1 });
+        const assessments = await Assessment.find({});
         res.json(assessments);
     } catch (error) {
         console.error('Error fetching assessments:', error);

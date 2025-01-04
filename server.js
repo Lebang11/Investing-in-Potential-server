@@ -32,6 +32,7 @@ const User = require('./database/Schema/User');
 const Job = require('./database/Schema/Job');
 const Application = require('./database/Schema/Applications');
 const Payment = require('./database/Schema/Payment');
+const Assessment = require('./database/Schema/Assessment');
 
 //payment route
 const PaymentRoute = require('./public/scripts/payment');
@@ -425,6 +426,21 @@ app.get('/applications', async (req, res) => {
       console.error('Error checking application:', error);
       res.status(500).json({ message: 'Error checking application status' });
   }
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ 
+        error: 'Internal server error',
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
+
+// 404 handler
+app.use((req, res) => {
+    console.log('404 Not Found:', req.method, req.url);
+    res.status(404).json({ error: 'Route not found' });
 });
 
 // listens to port 3000
