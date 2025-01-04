@@ -165,10 +165,18 @@ router.post('/initialize-enrollment', async (req, res) => {
         console.log('Enrollment payment initialization request:', req.body);
         const { email, name, amount, planType } = req.body;
 
+        // Validate required fields with detailed error
+        const missingFields = [];
+        if (!email) missingFields.push('email');
+        if (!name) missingFields.push('name');
+        if (!amount) missingFields.push('amount');
+        if (!planType) missingFields.push('planType');
+
         if (!email || !name || !amount || !planType) {
             return res.status(400).json({ 
                 error: 'Missing required fields',
-                received: req.body 
+                missingFields,
+                received: req.body
             });
         }
 
@@ -193,11 +201,21 @@ router.post('/initialize-enrollment', async (req, res) => {
 
         const plan = planDetails[planType];
         if (!plan) {
-            return res.status(400).json({ error: 'Invalid plan type' });
+            return res.status(400).json({ 
+                error: 'Invalid plan type',
+                validPlans: Object.keys(planDetails),
+                received: planType
+            });
         }
 
-        if (amount !== plan.price && amount !== plan.discountedPrice) {
-            return res.status(400).json({ error: 'Invalid amount for selected plan' });
+        // Convert amount to number for comparison
+        const numAmount = Number(amount);
+        if (numAmount !== plan.price && numAmount !== plan.discountedPrice) {
+            return res.status(400).json({ 
+                error: 'Invalid amount for selected plan',
+                expected: [plan.price, plan.discountedPrice],
+                received: numAmount
+            });
         }
 
         // Generate unique reference
@@ -206,13 +224,13 @@ router.post('/initialize-enrollment', async (req, res) => {
         // Create payment record in database
         const payment = await Payment.create({
             email,
-            amount,
+            amount: numAmount,
             planType,
             status: 'pending',
             reference,
             paymentDetails: {
                 planName: plan.name,
-                isDiscounted: amount === plan.discountedPrice
+                isDiscounted: numAmount === plan.discountedPrice
             }
         });
 
@@ -225,12 +243,12 @@ router.post('/initialize-enrollment', async (req, res) => {
             notify_url: PAYFAST_CONFIG.notify_url,
             name_first: name,
             email_address: email,
-            amount: amount.toFixed(2),
+            amount: numAmount.toFixed(2),
             item_name: `${plan.name} - Course Enrollment`,
             custom_str1: reference
         };
 
-        // Generate signature (using your existing signature generation logic)
+        // Generate signature
         const signatureString = Object.entries(paymentData)
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
             .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
@@ -238,10 +256,14 @@ router.post('/initialize-enrollment', async (req, res) => {
         
         paymentData.signature = md5(signatureString);
 
+        console.log('Sending payment data:', paymentData);
         res.json(paymentData);
     } catch (error) {
         console.error('Enrollment payment initialization error:', error);
-        res.status(500).json({ error: 'Failed to initialize payment' });
+        res.status(500).json({ 
+            error: 'Failed to initialize payment',
+            details: error.message
+        });
     }
 });
 
