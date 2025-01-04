@@ -6,6 +6,10 @@ const app = express();
 const port = 3001;
 require('dotenv').config();
 
+// Move body-parser configuration before routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 const ALLOWED_ORIGINS = [
     'http://localhost:3000',
     process.env.FRONTEND_URL

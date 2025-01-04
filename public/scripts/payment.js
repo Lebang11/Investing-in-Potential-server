@@ -5,6 +5,10 @@ require('dotenv').config();
 const Payment = require('../../database/Schema/Payment');
 const crypto = require('crypto');
 
+// Add body-parser middleware
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+
 // PayFast configuration
 const PAYFAST_CONFIG = {
     merchant_id: process.env.PAYFAST_MERCHANT_ID,
@@ -17,10 +21,14 @@ const PAYFAST_CONFIG = {
 // Initialize payment
 router.post('/initialize', async (req, res) => {
     try {
+        console.log('Payment initialization request body:', req.body); // Add logging
         const { email, name, amount, planType } = req.body;
 
         if (!email || !name || !amount || !planType) {
-            return res.status(400).json({ error: 'Missing required fields' });
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                received: req.body 
+            });
         }
 
         // Generate unique reference
