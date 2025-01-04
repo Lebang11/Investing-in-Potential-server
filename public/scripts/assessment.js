@@ -64,4 +64,26 @@ router.get('/:email', async (req, res) => {
     }
 });
 
+// Add new route to check assessment status
+router.get('/status/:email', async (req, res) => {
+    try {
+        const { email } = req.params;
+        const assessment = await Assessment.findOne({ email })
+            .sort({ completedAt: -1 });
+        
+        if (!assessment) {
+            return res.json({ exists: false });
+        }
+
+        res.json({
+            exists: true,
+            status: assessment.status,
+            completedAt: assessment.completedAt
+        });
+    } catch (error) {
+        console.error('Error checking assessment status:', error);
+        res.status(500).json({ error: 'Failed to check assessment status' });
+    }
+});
+
 module.exports = router; 

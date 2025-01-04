@@ -5,6 +5,11 @@ const AssessmentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    status: {
+        type: String,
+        enum: ['pending', 'reviewed', 'passed', 'failed'],
+        default: 'pending'
+    },
     aptitudeAnswers: {
         type: Object,
         required: true
@@ -37,5 +42,4 @@ const AssessmentSchema = new mongoose.Schema({
 
 AssessmentSchema.index({ email: 1 });
 
-module.exports = mongoose.model('Assessment', AssessmentSchema);
 module.exports = mongoose.model('Assessment', AssessmentSchema);
