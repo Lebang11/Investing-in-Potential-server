@@ -99,78 +99,153 @@
     "eq": [
       {
         "id": 0,
-        "question": "I find it easy to understand others' feelings",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "In a team project, a colleague consistently submits their work late. How would you handle this situation?",
+        "options": [
+          "Report them to the supervisor immediately",
+          "Have a private conversation to understand their challenges",
+          "Take over their tasks without discussion",
+          "Ignore the situation to avoid conflict"
+        ]
       },
       {
         "id": 1,
-        "question": "I remain calm under pressure",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "You receive harsh criticism in front of your colleagues. What's your immediate response?",
+        "options": [
+          "Defend yourself aggressively",
+          "Listen carefully and request a private discussion",
+          "Leave the room immediately",
+          "Criticize the person back"
+        ]
       },
       {
         "id": 2,
-        "question": "I can handle criticism well",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "A team member is struggling with personal issues affecting their work. What do you do?",
+        "options": [
+          "Keep your distance to respect their privacy",
+          "Offer support while maintaining professional boundaries",
+          "Tell them to keep personal issues at home",
+          "Take over all their work"
+        ]
       },
       {
         "id": 3,
-        "question": "I adapt easily to new situations",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "During a heated discussion, someone becomes visibly upset. How do you respond?",
+        "options": [
+          "Continue the discussion to reach a conclusion",
+          "Suggest a short break to cool down",
+          "Change the subject immediately",
+          "Leave them alone to process"
+        ]
       },
       {
         "id": 4,
-        "question": "I consider how my actions affect others",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "You notice a colleague taking credit for your work. What's your approach?",
+        "options": [
+          "Confront them publicly",
+          "Document your contributions and discuss privately",
+          "Start taking credit for their work",
+          "Say nothing to avoid conflict"
+        ]
       },
       {
         "id": 5,
-        "question": "I can work effectively in a team",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "In a group setting, someone shares an idea similar to yours. How do you react?",
+        "options": [
+          "Immediately point out it was your idea first",
+          "Build on their point and add your perspective",
+          "Stay silent and feel resentful",
+          "Dismiss their version of the idea"
+        ]
       },
       {
         "id": 6,
-        "question": "I communicate my feelings clearly",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "A project you led fails to meet its goals. How do you handle it?",
+        "options": [
+          "Blame team members who underperformed",
+          "Take responsibility and propose solutions",
+          "Make excuses about external factors",
+          "Avoid discussing the failure"
+        ]
       },
       {
         "id": 7,
-        "question": "I help others feel comfortable around me",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "You disagree with a new company policy. What's your response?",
+        "options": [
+          "Complain to colleagues",
+          "Present constructive feedback through proper channels",
+          "Ignore the policy quietly",
+          "Threaten to quit"
+        ]
       },
       {
         "id": 8,
-        "question": "I can resolve conflicts effectively",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "A colleague is spreading rumors about you. What do you do?",
+        "options": [
+          "Spread rumors about them in return",
+          "Address it directly with them and HR if needed",
+          "Ignore it completely",
+          "Confront them aggressively"
+        ]
       },
       {
         "id": 9,
-        "question": "I am patient with difficult people",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "Your team is resistant to a change you're implementing. How do you proceed?",
+        "options": [
+          "Force the change through",
+          "Listen to concerns and adjust plans accordingly",
+          "Abandon the change entirely",
+          "Let each person decide to participate"
+        ]
       },
       {
         "id": 10,
-        "question": "I take responsibility for my mistakes",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "You notice a mistake in your work after presentation. What's your action?",
+        "options": [
+          "Hope no one notices",
+          "Acknowledge it and propose corrections",
+          "Blame it on technical issues",
+          "Delete the presentation"
+        ]
       },
       {
         "id": 11,
-        "question": "I can motivate others",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "A colleague is visibly stressed about their workload. How do you respond?",
+        "options": [
+          "Tell them to work faster",
+          "Offer specific help and support",
+          "Avoid them until they feel better",
+          "Tell them everyone is stressed"
+        ]
       },
       {
         "id": 12,
-        "question": "I stay positive in challenging situations",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "You receive conflicting requests from two managers. What do you do?",
+        "options": [
+          "Do both tasks poorly",
+          "Arrange a meeting to discuss priorities",
+          "Choose the senior manager's task",
+          "Ignore both requests"
+        ]
       },
       {
         "id": 13,
-        "question": "I am open to feedback about my behavior",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "Your idea is criticized in a meeting. How do you handle it?",
+        "options": [
+          "Defend it aggressively",
+          "Consider the feedback and adapt",
+          "Never share ideas again",
+          "Leave the meeting"
+        ]
       },
       {
         "id": 14,
-        "question": "I can read non-verbal cues well",
-        "options": ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+        "question": "A team member constantly interrupts others. What's your approach?",
+        "options": [
+          "Interrupt them back",
+          "Privately discuss the impact of their behavior",
+          "Stop attending meetings",
+          "Complain to others"
+        ]
       }
     ]
   }
