@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'admin@investinginpotential.co.za',
+        user: process.env.EMAIL_USER,
         pass: process.env.GOOGLE_APP_PASSWORD
     }
 });
@@ -257,7 +257,7 @@ router.put('/status/:id', async (req, res) => {
             `;
 
             await transporter.sendMail({
-                from: 'Investing in Potential <admin@investinginpotential.co.za>',
+                from: `Investing in Potential <${process.env.EMAIL_USER}>`,
                 to: assessment.email,
                 subject: 'Congratulations! You\'ve Been Accepted! 🎉',
                 html: emailContent
