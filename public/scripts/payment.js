@@ -159,4 +159,90 @@ router.get('/check', async (req, res) => {
     }
 });
 
+// Add this new route while keeping the existing /initialize route unchanged
+router.post('/initialize-enrollment', async (req, res) => {
+    try {
+        console.log('Enrollment payment initialization request:', req.body);
+        const { email, name, amount, planType } = req.body;
+
+        if (!email || !name || !amount || !planType) {
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                received: req.body 
+            });
+        }
+
+        // Validate plan type and amount
+        const planDetails = {
+            basic: {
+                price: 300,
+                discountedPrice: 0,
+                name: 'Basic Plan'
+            },
+            premium: {
+                price: 450,
+                discountedPrice: 0,
+                name: 'Premium Plan'
+            },
+            vip: {
+                price: 700,
+                discountedPrice: 250,
+                name: 'VIP Plan'
+            }
+        };
+
+        const plan = planDetails[planType];
+        if (!plan) {
+            return res.status(400).json({ error: 'Invalid plan type' });
+        }
+
+        if (amount !== plan.price && amount !== plan.discountedPrice) {
+            return res.status(400).json({ error: 'Invalid amount for selected plan' });
+        }
+
+        // Generate unique reference
+        const reference = crypto.randomBytes(16).toString('hex');
+
+        // Create payment record in database
+        const payment = await Payment.create({
+            email,
+            amount,
+            planType,
+            status: 'pending',
+            reference,
+            paymentDetails: {
+                planName: plan.name,
+                isDiscounted: amount === plan.discountedPrice
+            }
+        });
+
+        // Generate PayFast data
+        const paymentData = {
+            merchant_id: PAYFAST_CONFIG.merchant_id,
+            merchant_key: PAYFAST_CONFIG.merchant_key,
+            return_url: `${PAYFAST_CONFIG.return_url}?type=enrollment`,
+            cancel_url: `${process.env.FRONTEND_URL}/onboarding`,
+            notify_url: PAYFAST_CONFIG.notify_url,
+            name_first: name,
+            email_address: email,
+            amount: amount.toFixed(2),
+            item_name: `${plan.name} - Course Enrollment`,
+            custom_str1: reference
+        };
+
+        // Generate signature (using your existing signature generation logic)
+        const signatureString = Object.entries(paymentData)
+            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+            .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+            .join('&');
+        
+        paymentData.signature = md5(signatureString);
+
+        res.json(paymentData);
+    } catch (error) {
+        console.error('Enrollment payment initialization error:', error);
+        res.status(500).json({ error: 'Failed to initialize payment' });
+    }
+});
+
 module.exports = router;
