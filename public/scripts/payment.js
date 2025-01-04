@@ -2,13 +2,8 @@ const express = require('express');
 const router = express.Router();
 const md5 = require('md5');
 require('dotenv').config();
-const mongoose = require('mongoose');
-
 const Payment = require('../../database/Schema/Payment');
-
-const bodyParser = require('body-parser');
-router.use(bodyParser.json());
-
+const crypto = require('crypto');
 
 // PayFast configuration
 const PAYFAST_CONFIG = {
@@ -28,12 +23,16 @@ router.post('/initialize', async (req, res) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
+        // Generate unique reference
+        const reference = crypto.randomBytes(16).toString('hex');
+
         // Create payment record in database
         const payment = await Payment.create({
             email,
             amount,
             planType,
-            status: 'pending'
+            status: 'pending',
+            reference
         });
 
         // Generate PayFast data
@@ -45,18 +44,18 @@ router.post('/initialize', async (req, res) => {
             notify_url: PAYFAST_CONFIG.notify_url,
             name_first: name,
             email_address: email,
-            amount: amount.toFixed(2), // PayFast requires amount with 2 decimal places
+            amount: amount.toFixed(2),
             item_name: 'Assessment Fee',
-            custom_str1: payment._id.toString()
+            custom_str1: reference // Use our generated reference
         };
 
         // Generate signature
-        // const signatureString = Object.entries(paymentData)
-        //     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-        //     .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
-        //     .join('&');
+        const signatureString = Object.entries(paymentData)
+            .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+            .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
+            .join('&');
         
-        // paymentData.signature = md5(signatureString);
+        paymentData.signature = md5(signatureString);
 
         res.json(paymentData);
     } catch (error) {
@@ -64,58 +63,23 @@ router.post('/initialize', async (req, res) => {
         res.status(500).json({ error: 'Failed to initialize payment' });
     }
 });
-// // Initialize payment
-// router.post('/initialize', async (req, res) => {
-//     try {
-//         console.log(req.body)
-//         const { email, name, amount, planType } = req.body;
-
-//         // Create payment record in database
-//         const payment = await Payment.create({
-//             email,
-//             amount,
-//             planType,
-//             status: 'pending'
-//         });
-
-//         // Generate PayFast data
-//         const paymentData = {
-//             ...PAYFAST_CONFIG,
-//             name_first: name,
-//             email_address: email,
-//             amount: amount,
-//             item_name: 'Assessment Fee',
-//             custom_str1: payment._id // Store our payment ID for reference
-//         };
-
-//         // Generate signature
-//         const signatureString = Object.entries(paymentData)
-//     .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-//     .map(([key, value]) => `${key}=${encodeURIComponent(String(value).trim())}`)
-//     .join('&');
-        
-//         paymentData.signature = md5(signatureString);
-
-//         res.json(paymentData);
-//     } catch (error) {
-//         console.error('Payment initialization error:', error);
-//         res.status(500).json({ error: 'Failed to initialize payment' });
-//     }
-// });
 
 // Payment notification webhook
 router.post('/notify', async (req, res) => {
     try {
         const { 
-            custom_str1, 
+            custom_str1, // This is our reference
             payment_status,
             pf_payment_id,
             payment_date,
             amount_gross 
         } = req.body;
 
-        // Convert string ID to MongoDB ObjectId
-        const paymentId = new mongoose.Types.ObjectId(custom_str1);
+        // Find payment by our reference
+        const payment = await Payment.findOne({ reference: custom_str1 });
+        if (!payment) {
+            return res.status(404).json({ error: 'Payment not found' });
+        }
 
         // Map PayFast status to our schema status
         let normalizedStatus;
@@ -136,36 +100,19 @@ router.post('/notify', async (req, res) => {
                 normalizedStatus = 'pending';
         }
 
-        // Update payment with normalized status using converted ObjectId
-        const updatedPayment = await Payment.findByIdAndUpdate(
-            paymentId,  // Use the converted ObjectId
-            {
-                status: normalizedStatus,
-                paymentDetails: {
-                    paymentId: pf_payment_id,
-                    paymentDate: payment_date,
-                    amountPaid: amount_gross,
-                    isPaid: normalizedStatus === 'COMPLETE'
-                },
-                paidAt: normalizedStatus === 'COMPLETE' ? new Date() : null
-            },
-            { new: true }
-        );
-
-        console.log('Payment status updated:', updatedPayment); // Add this for debugging
-
-        // If payment successful, create assessment session
+        // Update payment
+        payment.status = normalizedStatus;
+        payment.paymentDetails = {
+            paymentId: pf_payment_id,
+            paymentDate: payment_date,
+            amountPaid: amount_gross,
+            isPaid: normalizedStatus === 'COMPLETE'
+        };
         if (normalizedStatus === 'COMPLETE') {
-            await Assessment.create({
-                userId: custom_str1,
-                status: 'pending',
-                timeLimit: {
-                    aptitude: 2400, // 40 minutes
-                    eq: 900 // 15 minutes
-                }
-            });
+            payment.completedAt = new Date();
         }
 
+        await payment.save();
         res.status(200).end();
     } catch (error) {
         console.error('Payment notification error:', error);

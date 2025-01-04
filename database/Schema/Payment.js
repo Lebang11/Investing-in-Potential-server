@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const PaymentSchema = new mongoose.Schema({
     email: {
@@ -30,8 +31,12 @@ const PaymentSchema = new mongoose.Schema({
     },
     reference: {
         type: String,
-        unique: true
+        unique: true,
+        default: () => crypto.randomBytes(16).toString('hex')
     }
 });
+
+// Add index for faster queries
+PaymentSchema.index({ email: 1, status: 1 });
 
 module.exports = mongoose.model('Payment', PaymentSchema);
