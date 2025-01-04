@@ -10,22 +10,16 @@ const AssessmentSchema = new mongoose.Schema({
         enum: ['pending', 'reviewed', 'passed', 'failed'],
         default: 'pending'
     },
-    aptitudeAnswers: {
-        type: [{
-            questionId: Number,
-            answer: Number,
-            correct: Boolean
-        }],
-        required: true
-    },
-    eqAnswers: {
-        type: [{
-            questionId: Number,
-            answer: Number,
-            score: Number
-        }],
-        required: true
-    },
+    aptitudeAnswers: [{
+        questionId: Number,
+        answer: Number,      // Index of the selected answer
+        correct: Boolean     // Whether the answer was correct
+    }],
+    eqAnswers: [{
+        questionId: Number,
+        answer: Number,      // Index of the selected answer (0-4)
+        score: Number        // Score for this answer (1-5)
+    }],
     aptitudeScore: {
         type: Number,
         default: 0

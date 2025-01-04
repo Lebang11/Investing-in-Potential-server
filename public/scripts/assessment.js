@@ -18,53 +18,45 @@ router.post('/submit', async (req, res) => {
         } = req.body;
 
         if (!email || !aptitudeAnswers || !eqAnswers) {
-            return res.status(400).json({ 
-                error: 'Missing required fields' 
-            });
+            return res.status(400).json({ error: 'Missing required fields' });
         }
 
         // Ensure startTime is a valid date
         const parsedStartTime = new Date(startTime);
         if (isNaN(parsedStartTime.getTime())) {
-            return res.status(400).json({
-                error: 'Invalid start time'
-            });
+            return res.status(400).json({ error: 'Invalid start time' });
         }
 
-        // Calculate aptitude score
+        // Format aptitude answers and calculate score
         const formattedAptitudeAnswers = Object.entries(aptitudeAnswers)
             .filter(([key]) => key.startsWith('aptitude_'))
             .map(([key, answer]) => {
                 const questionId = parseInt(key.split('_')[1]);
-                // Make sure questionId is within bounds
-                if (questionId >= 0 && questionId < aptitudeQuestions.length) {
-                    const question = aptitudeQuestions[questionId];
-                    return {
-                        questionId,
-                        answer,
-                        correct: answer === question.correct
-                    };
-                }
-                return null;
-            }).filter(Boolean); // Remove any null entries
+                const question = aptitudeQuestions[questionId];
+                const parsedAnswer = parseInt(answer);
+                
+                return {
+                    questionId,
+                    answer: parsedAnswer,
+                    correct: parsedAnswer === question.correct
+                };
+            });
 
         const aptitudeScore = (formattedAptitudeAnswers.filter(a => a.correct).length / aptitudeQuestions.length) * 100;
 
-        // Calculate EQ score
+        // Format EQ answers and calculate score
         const formattedEqAnswers = Object.entries(eqAnswers)
             .filter(([key]) => key.startsWith('eq_'))
             .map(([key, answer]) => {
                 const questionId = parseInt(key.split('_')[1]);
-                // Make sure questionId is within bounds
-                if (questionId >= 0 && questionId < eqQuestions.length) {
-                    return {
-                        questionId,
-                        answer,
-                        score: calculateEQScore(answer, questionId)
-                    };
-                }
-                return null;
-            }).filter(Boolean); // Remove any null entries
+                const parsedAnswer = parseInt(answer);
+                
+                return {
+                    questionId,
+                    answer: parsedAnswer,
+                    score: calculateEQScore(parsedAnswer)
+                };
+            });
 
         const eqScore = formattedEqAnswers.reduce((acc, curr) => acc + curr.score, 0) / formattedEqAnswers.length;
 
@@ -87,25 +79,14 @@ router.post('/submit', async (req, res) => {
 
     } catch (error) {
         console.error('Assessment submission error:', error);
-        res.status(500).json({ 
-            error: 'Failed to submit assessment' 
-        });
+        res.status(500).json({ error: 'Failed to submit assessment' });
     }
 });
 
-// Helper function to calculate EQ score for each answer
-function calculateEQScore(answer, questionId) {
-    const question = eqQuestions[questionId];
-    // Implement your EQ scoring logic here
-    // For example:
-    const scoreMap = {
-        0: 1,  // Strongly disagree
-        1: 2,  // Disagree
-        2: 3,  // Neutral
-        3: 4,  // Agree
-        4: 5   // Strongly agree
-    };
-    return scoreMap[answer] || 3; // Default to neutral if invalid answer
+// Helper function to calculate EQ score
+function calculateEQScore(answer) {
+    // Convert 0-4 to 1-5 score
+    return answer + 1;
 }
 
 // Get assessment results
@@ -205,15 +186,11 @@ router.get('/:id/details', async (req, res) => {
             ...assessment.toObject(),
             aptitudeQuestions: assessment.aptitudeAnswers.map(answer => ({
                 ...answer,
-                question: answer.questionId < aptitudeQuestions.length ? 
-                    aptitudeQuestions[answer.questionId] : 
-                    { question: 'Question not found', options: [] }
+                question: aptitudeQuestions[answer.questionId]
             })),
             eqQuestions: assessment.eqAnswers.map(answer => ({
                 ...answer,
-                question: answer.questionId < eqQuestions.length ? 
-                    eqQuestions[answer.questionId] : 
-                    { question: 'Question not found', options: [] }
+                question: eqQuestions[answer.questionId]
             }))
         };
 
