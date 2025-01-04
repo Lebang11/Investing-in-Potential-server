@@ -89,8 +89,7 @@ router.get('/status/:email', async (req, res) => {
 // Get all assessments (admin only)
 router.get('/all', async (req, res) => {
     try {
-        const assessments = await Assessment.find()
-            .sort({ completedAt: -1 });
+        const assessments = await Assessment.find();
         
         res.json(assessments);
     } catch (error) {
