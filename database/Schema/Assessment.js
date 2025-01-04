@@ -42,4 +42,4 @@ const AssessmentSchema = new mongoose.Schema({
 
 AssessmentSchema.index({ email: 1 });
 
-module.exports = mongoose.model('Assessment', AssessmentSchema);
+module.exports = mongoose.model('assessments', AssessmentSchema);
